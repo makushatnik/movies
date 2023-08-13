@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pydantic.fields import Field
-# from typing import Optional
 
 app = FastAPI(title='Simple Math operations')
 

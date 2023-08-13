@@ -5,7 +5,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from api.v1 import film
+from api.v1 import film, genre
 from core import config
 from core.logger import LOGGING
 from db import elastic
@@ -13,9 +13,11 @@ from db import redis
 
 app = FastAPI(
     title=config.PROJECT_NAME,
+    description="Информация о фильмах, жанрах и людях, участвовавших в создании произведения",
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
-    default_response_class=ORJSONResponse
+    default_response_class=ORJSONResponse,
+    version="1.0.0"
 )
 
 
@@ -32,7 +34,8 @@ app = FastAPI(
 #     await redis.redis.close()
 #     await elastic.es.close()
 
-app.include_router(film.router, prefix='/v1/film', tags=['film'])
+app.include_router(film.router, prefix='/v1/film', tags=['Фильмы'])
+app.include_router(genre.router, prefix='/v1/genre', tags=['Жанры'])
 
 if __name__ == '__main__':
     uvicorn.run(

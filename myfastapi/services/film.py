@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, List
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
@@ -8,13 +8,18 @@ from myfastapi.db.elastic import get_elastic
 from myfastapi.db.redis import get_redis
 from myfastapi.models.film import Film
 
+from basic import BasicService
+
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
 
-class FilmService:
+class FilmService(BasicService):
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
-        self.redis = redis
-        self.elastic = elastic
+        super().__init__(redis, elastic)
+
+    async def get_all(self) -> List[Film]:
+        result = []
+        return result
 
     async def get_by_id(self, film_id: str) -> Optional[Film]:
         film = await self._get_from_cache(film_id)

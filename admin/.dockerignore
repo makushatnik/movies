@@ -1,0 +1,6 @@
+.idea
+.git
+*.md
+*.db
+*.sqlite
+*.sqlite3

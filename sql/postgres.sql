@@ -2,7 +2,6 @@ CREATE DATABASE IF NOT EXISTS movies;
 
 CREATE SCHEMA IF NOT EXISTS content;
 
--- Установка расширения для генерации UUID
 CREATE EXTENSION "uuid-ossp";
 
 SET search_path TO content, public;
