@@ -7,6 +7,9 @@ from elasticsearch import AsyncElasticsearch
 SERVICE_URL = 'http://127.0.0.1:8000'
 API_URL = f'{SERVICE_URL}/api/v1'
 
+ES_HOST = '127.0.0.1'
+ES_PORT = 9200
+
 
 @dataclass
 class HTTPResponse:
@@ -17,7 +20,7 @@ class HTTPResponse:
 
 @pytest.fixture(scope='session')
 async def es_client():
-    client = AsyncElasticsearch(hosts='127.0.0.1:9200')
+    client = AsyncElasticsearch(hosts=f'{ES_HOST}:{ES_PORT}')
     yield client
     await client.close()
 

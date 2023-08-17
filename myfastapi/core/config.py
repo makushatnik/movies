@@ -5,6 +5,7 @@ from .logger import LOGGING
 logging_config.dictConfig(LOGGING)
 
 PROJECT_NAME = os.getenv('PROJECT_NAME', 'movies')
+APP_PORT = os.getenv('APP_PORT', 8000)
 
 REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))

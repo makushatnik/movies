@@ -1,22 +1,27 @@
-import os
-import smtplib
+import json
 import logging
+import pika
+import smtplib
+import sys
+from config import *
 from email.message import EmailMessage
 from jinja2 import Environment, FileSystemLoader
 
-SENDER = 'login@gmail.com'
-PASSWORD = ''
-SMTP_SERVER = 'smtp.gmail.com'
-SMTP_PORT = 465
-
 logger = logging.getLogger(__name__)
 
+connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST))
+channel = connection.channel()
+channel.queue_declare(queue=DEFAULT_QUEUE)
 
-def poll_queue():
-    new_notifications = []
-    if new_notifications:
-        for elem in new_notifications:
-            send_email(elem.recipient, elem.subject, elem.text)
+
+def poll_queue(ch, method, properties, body: bytes):
+    # new_notifications = []
+    # if new_notifications:
+    #     for elem in new_notifications:
+    #         send_email(elem.recipient, elem.subject, elem.text)
+    if body:
+        json_body = json.loads(body.decode(ENCODING))
+        print(f" [x] Received {json_body}")
 
 
 def send_email(recipient: str, subject: str, text: str):
@@ -56,3 +61,23 @@ def sendmail(recipient: str, msg: str) -> None:
     except smtplib.SMTPException:
         logger.exception('cannot send email')
     smtp_serv.quit()
+
+
+def main():
+    channel.basic_consume(queue=DEFAULT_QUEUE, on_message_callback=poll_queue, auto_ack=True)
+    print(' [*] Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        channel.stop_consuming()
+        connection.close()
+        sys.exit(0)
+    except Exception:
+        print('Smth went wrong')
+        channel.stop_consuming()
+        connection.close()
